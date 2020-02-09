@@ -79,7 +79,7 @@ namespace WordSearch
                 return false;
             }
             
-            // avoid the input index = -1
+            // Single word.
             if (index == word.Length - 1) return true;
 
             // mark this visit index to true that means it has been visited.
