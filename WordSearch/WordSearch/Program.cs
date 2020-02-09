@@ -85,8 +85,6 @@ namespace WordSearch
             // mark this visit index to true that means it has been visited.
             visited[i, j] = true;
 
-            //(1,1)
-
             // Up point.
             if (ExistHelper(baseBoard, i - 1, j, word, index + 1, visited)) return true;
 
