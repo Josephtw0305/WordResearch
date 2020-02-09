@@ -4,19 +4,11 @@ namespace WordSearch
 {
     class Program
     {
-        static int rowNumber;
-        static int colNumber;
-
-        // For searching in all 8 direction  
-        static int[] x = { -1, -1, -1, 0, 0, 1, 1, 1 };
-        static int[] y = { -1, 0, 1, -1, 1, -1, 0, 1 };
-
+       
         static void Main(string[] args)
         {
-            rowNumber = 3;
-            colNumber = 4;
-
-            // Set test map.
+        
+            // Set searching baseBoard.
             char[,] grid = { {'A','B','C','E'},
                              {'S','F','C','S'},
                              {'A','D','E','E' }
@@ -32,25 +24,40 @@ namespace WordSearch
             resultMethod2 = existWord(grid, "ABCB");
             Console.WriteLine($"ABCB:{resultMethod2.ToString()}");
 
-            Console.WriteLine("Press any key to end...");
-            Console.ReadKey();
-
+            string input = "";
+            while (!(input.ToString() == "9999"))
+            {
+                Console.Write("Please input searching words:");
+                string searchWords = Console.ReadLine();
+                resultMethod2 = existWord(grid, searchWords);
+                Console.WriteLine($"{searchWords}:{resultMethod2.ToString()}");
+                Console.WriteLine("Press 9999 to end...");
+                input = Console.ReadLine();
+            }
+        
         }
 
-        private static bool existWord(char[,] board, string word)
+        /// <summary>
+        /// Checking whether the giving word exist or not.
+        /// </summary>
+        /// <param name="board">base searching baseBoard.</param>
+        /// <param name="word">target searching words.</param>
+        /// <returns></returns>
+        private static bool existWord(char[,] baseBoard, string word)
         {
 
-            var row = board.GetLength(0);
-            var column = board.GetLength(1);
+            var row = baseBoard.GetLength(0);
+            var column = baseBoard.GetLength(1);
             var visited = new bool[row, column];
 
             for (int i = 0; i < row; i++)
             {
                 for (int j = 0; j < column; j++)
                 {
-                    if (board[i, j] == word[0])
+                    // Locate the first letter.
+                    if (baseBoard[i, j] == word[0])
                     {
-                        if (ExistHelper(board, i, j, word, 0, visited)) return true;
+                        if (ExistHelper(baseBoard, i, j, word, 0, visited)) return true;
                     }
                 }
             }
@@ -58,27 +65,41 @@ namespace WordSearch
             return false;
         }
 
-        private static bool ExistHelper(char[,] board, int i, int j, string word, int index, bool[,] visited)
+
+        private static bool ExistHelper(char[,] baseBoard, int i, int j, string word, int index, bool[,] visited)
         {
+            // Confirming whether the index out of limitation or not.
             if (i < 0 ||
-                i >= board.GetLength(0) ||
+                i >= baseBoard.GetLength(0) ||
                 j < 0 ||
-                j >= board.GetLength(1) ||
-                board[i, j] != word[index] ||
+                j >= baseBoard.GetLength(1) ||
+                baseBoard[i, j] != word[index] ||
                 visited[i, j])
             {
                 return false;
             }
-                
+            
+            // avoid the input index = -1
             if (index == word.Length - 1) return true;
 
+            // mark this visit index to true that means it has been visited.
             visited[i, j] = true;
 
-            if (ExistHelper(board, i - 1, j, word, index + 1, visited)) return true;
-            if (ExistHelper(board, i + 1, j, word, index + 1, visited)) return true;
-            if (ExistHelper(board, i, j - 1, word, index + 1, visited)) return true;
-            if (ExistHelper(board, i, j + 1, word, index + 1, visited)) return true;
+            //(1,1)
 
+            // Up point.
+            if (ExistHelper(baseBoard, i - 1, j, word, index + 1, visited)) return true;
+
+            // Down point
+            if (ExistHelper(baseBoard, i + 1, j, word, index + 1, visited)) return true;
+
+            // Left point
+            if (ExistHelper(baseBoard, i, j - 1, word, index + 1, visited)) return true;
+
+            // Right point.
+            if (ExistHelper(baseBoard, i, j + 1, word, index + 1, visited)) return true;
+
+            // if no match point which locates the target point's up,down,lefe,and right point, mark this location to "visited".
             visited[i, j] = false;
             return false;
         }
